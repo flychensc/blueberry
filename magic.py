@@ -22,6 +22,7 @@ def init(context):
 
 
 def after_trading(context):
+    day = context.now.date()
     stocks = all_instruments(type="CS")
     stocks = stocks[(stocks["special_type"] == "Normal") & (stocks["status"] == "Active") & ((stocks["board_type"] == "MainBoard") | (stocks["board_type"] == "GEM"))]
     for order_book_id in stocks['order_book_id']:
@@ -32,5 +33,8 @@ def after_trading(context):
         ma3 = talib.SMA(prices, context.MA3)[-1]
         rsi = talib.RSI(prices, timeperiod=context.RSI1)[-1]
         if price > ma1 > ma2 > ma3 and rsi > context.RSI1_THR:
-            context.candidates.append([[context.now, order_book_id]])
+            context.candidates.append([[day, order_book_id]])
+
+    if context.run_info.end_date == day:
+        context.candidates.to_csv('candidates.csv')
 
