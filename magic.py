@@ -1,5 +1,6 @@
 from rqalpha.apis import *
 
+import numpy as np
 import pandas as pd
 
 import configparser
@@ -18,22 +19,29 @@ def init(context):
     context.BAR_COUNT = context.MA3+1
     context.FREQUENCY = '1d'
 
-    context.candidates = pd.DataFrame(columns=['datetime','order_book_id'])
+    context.candidates = pd.DataFrame(columns=['date','order_book_id'])
 
 
 def after_trading(context):
     day = context.now.date()
     stocks = all_instruments(type="CS")
-    stocks = stocks[(stocks["special_type"] == "Normal") & (stocks["status"] == "Active") & ((stocks["board_type"] == "MainBoard") | (stocks["board_type"] == "GEM"))]
     for order_book_id in stocks['order_book_id']:
-        prices = history_bars(order_book_id, context.BAR_COUNT, context.FREQUENCY, fields='close', include_now=True)
+        # 免费的日级别数据每个月月初更新，下载命令: rqalpha download-bundle
+        historys = history_bars(order_book_id, context.BAR_COUNT, context.FREQUENCY, fields=['datetime', 'close'], include_now=True)
+        # 今日无数据: 停牌
+        if historys['datetime'][-1] < np.int64(day.strftime("%Y%m%d%H%M%S")):
+            continue
+        # 数据不足: 新股
+        if historys['datetime'].size < context.BAR_COUNT:
+            continue
+        prices = historys['close']
         price = prices[-1]
         ma1 = talib.SMA(prices, context.MA1)[-1]
         ma2 = talib.SMA(prices, context.MA2)[-1]
         ma3 = talib.SMA(prices, context.MA3)[-1]
         rsi = talib.RSI(prices, timeperiod=context.RSI1)[-1]
         if price > ma1 > ma2 > ma3 and rsi > context.RSI1_THR:
-            context.candidates.append([[day, order_book_id]])
+            context.candidates = context.candidates.append({"date": day, "order_book_id": order_book_id}, ignore_index=True)
 
     if context.run_info.end_date == day:
         context.candidates.to_csv('candidates.csv')
