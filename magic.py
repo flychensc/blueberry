@@ -17,8 +17,9 @@ def classify(context, order_book_id, day, historys):
         label = "holding"
         if historys['datetime'][0] == np.int64(order_day.strftime("%Y%m%d%H%M%S")):
             # 数据正常
-            stop_loss = context.order_cost*context.STOP_LOSS
-            take_profit = context.order_cost*context.TAKE_PROFIT
+            price = historys['close'][0]
+            stop_loss = price*context.STOP_LOSS
+            take_profit = price*context.TAKE_PROFIT
             for price in historys['close']:
                 if price < stop_loss:
                     label = "loss"
@@ -30,9 +31,9 @@ def classify(context, order_book_id, day, historys):
             context.picking.loc[(context.picking['date'] == order_day) & (context.picking['order_book_id'] == order_book_id), 'classify'] = label
         else:
             # 定位入选日，只会找到一项[0]，且只需要这项的行号[0]
-            delta_days = np.where(historys == np.int64(order_day.strftime("%Y%m%d%H%M%S")))[0][0]
+            delta_days = np.where(historys['datetime'] == np.int64(order_day.strftime("%Y%m%d%H%M%S")))[0][0]
             # 继续平移停牌的这段时间
-            verify_day = day + datetime.timedelta(days=delta_days)
+            verify_day = day + datetime.timedelta(days=int(delta_days))
             context.cache.setdefault(verify_day, {})
             # 价格可能复权，所以保存入选日期
             context.cache[verify_day][order_book_id] = order_day
@@ -50,7 +51,7 @@ def init(context):
     context.BAR_COUNT = context.MA3+1
     context.FREQUENCY = '1d'
 
-    context.POSITION_DAY = -config.getint('POLICY', 'POSITION_DAY')
+    context.POSITION_DAY = config.getint('POLICY', 'POSITION_DAY')
     context.STOP_LOSS = config.getfloat('POLICY', 'STOP_LOSS')
     context.TAKE_PROFIT = config.getfloat('POLICY', 'TAKE_PROFIT')
 
