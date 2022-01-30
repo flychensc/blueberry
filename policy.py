@@ -25,6 +25,8 @@ def classify(context, order_book_id, order_day, historys):
             label = "profit"
             profit = 1 - price/cost
             break
+    if label == "holding":
+        profit = 1 - historys['close'][-1]/cost
 
     context.classifying.loc[(context.classifying['order_day'] == order_day) & (context.classifying['order_book_id'] == order_book_id), 'holding_days'] = int(holding_days)
     context.classifying.loc[(context.classifying['order_day'] == order_day) & (context.classifying['order_book_id'] == order_book_id), 'profit'] = round(profit, 2)
@@ -73,6 +75,8 @@ def after_trading(context):
             classify(context, order_book_id, order_day, historys[:context.POSITION_DAY])
 
     if context.run_info.end_date == day:
-        context.classifying.to_csv('classifying.csv')
+        context.classifying = context.classifying[context.classifying['classify'] != ""]
+        if context.classifying.size:
+            context.classifying.to_csv('classifying.csv', mode='a')
         print(dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "END")
 
