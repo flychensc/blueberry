@@ -1,5 +1,6 @@
 from rqalpha.apis import *
 
+import datetime as dt
 import numpy as np
 import pandas as pd
 
@@ -8,6 +9,7 @@ import talib
 
 
 def init(context):
+    print(dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "START")
     config = configparser.ConfigParser()
     config.read('config.ini')
 
@@ -50,4 +52,5 @@ def after_trading(context):
 
     if context.run_info.end_date == day:
         context.picking.to_csv('picking.csv')
+        print(dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "END")
 
