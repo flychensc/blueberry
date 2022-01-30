@@ -4,11 +4,11 @@ from rqalpha import run_file
 
 config = {
   "base": {
-    "start_date": "2022-01-01",
-    "end_date": "2022-01-26"
+    "start_date": "2021-10-01",
+    "end_date": "2021-11-30"
   },
   "extra": {
-    "log_level": "verbose",
+    "log_level": "warning",
   },
   "mod": {
     "sys_analyser": {
