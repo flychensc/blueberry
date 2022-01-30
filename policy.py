@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 
 import configparser
+import os
 
 
 def classify(context, order_book_id, order_day, historys):
@@ -19,11 +20,11 @@ def classify(context, order_book_id, order_day, historys):
         holding_days += 1
         if price < stop_loss:
             label = "loss"
-            profit = 1 - price/cost
+            profit = price/cost - 1
             break
         if price > take_profit:
             label = "profit"
-            profit = 1 - price/cost
+            profit = price/cost - 1
             break
     if label == "holding":
         profit = 1 - historys['close'][-1]/cost
@@ -77,6 +78,9 @@ def after_trading(context):
     if context.run_info.end_date == day:
         context.classifying = context.classifying[context.classifying['classify'] != ""]
         if context.classifying.size:
-            context.classifying.to_csv('classifying.csv', mode='a')
+            if os.path.exists('classifying.csv'):
+                context.classifying.to_csv('classifying.csv', mode='a', header=False)
+            else:
+                context.classifying.to_csv('classifying.csv')
         print(dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "END")
 
