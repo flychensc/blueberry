@@ -51,6 +51,6 @@ def after_trading(context):
                 }, ignore_index=True)
 
     if context.run_info.end_date == day:
-        context.picking.to_csv('picking.csv')
+        context.picking.to_csv('picking.csv', index=False)
         print(dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "END")
 

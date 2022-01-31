@@ -47,7 +47,7 @@ def init(context):
     context.TAKE_PROFIT = config.getfloat('POLICY', 'TAKE_PROFIT')
 
     # context.classifying = pd.DataFrame(columns=['order_day','order_book_id', 'holding_days', 'profit', 'classify'])
-    context.classifying = pd.read_csv("picking.csv", index_col=0, parse_dates=["order_day"], date_parser=lambda x: dt.datetime.strptime(x, "%Y-%m-%d"))
+    context.classifying = pd.read_csv("picking.csv", parse_dates=["order_day"], date_parser=lambda x: dt.datetime.strptime(x, "%Y-%m-%d"))
     # CONVERT dtype: datetime64[ns] to datetime.date
     context.classifying['order_day'] = context.classifying['order_day'].dt.date
 
@@ -79,8 +79,8 @@ def after_trading(context):
         context.classifying = context.classifying[context.classifying['classify'] != ""]
         if context.classifying.size:
             if os.path.exists('classifying.csv'):
-                context.classifying.to_csv('classifying.csv', mode='a', header=False)
+                context.classifying.to_csv('classifying.csv', mode='a', index=False, header=False)
             else:
-                context.classifying.to_csv('classifying.csv')
+                context.classifying.to_csv('classifying.csv', index=False)
         print(dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "END")
 
