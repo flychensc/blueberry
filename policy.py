@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 
 import configparser
-import os
+import pathlib
 
 
 def classify(context, order_book_id, order_day, historys):
@@ -78,7 +78,7 @@ def after_trading(context):
     if context.run_info.end_date == day:
         context.classifying = context.classifying[context.classifying['classify'] != ""]
         if context.classifying.size:
-            if os.path.exists('classifying.csv'):
+            if pathlib.Path('classifying.csv').exists():
                 context.classifying.to_csv('classifying.csv', mode='a', index=False, header=False)
             else:
                 context.classifying.to_csv('classifying.csv', index=False)
