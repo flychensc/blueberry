@@ -2,10 +2,16 @@
 
 from rqalpha import run_file
 
+import configparser
+
+
+cfg = configparser.ConfigParser()
+cfg.read('config.ini')
+
 config = {
   "base": {
-    "start_date": "2005-01-01",
-    "end_date": "2021-12-31"
+    "start_date": cfg.get('PICK', 'START_DAY'),
+    "end_date": cfg.get('PICK', 'END_DAY')
   },
   "extra": {
     "log_level": "warning",

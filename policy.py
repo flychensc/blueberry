@@ -39,7 +39,8 @@ def init(context):
     config = configparser.ConfigParser()
     config.read('config.ini')
 
-    context.BAR_COUNT = 270
+    context.BAR_COUNT = (dt.datetime.strptime(config.get("CLASSIFY", "DAY"), "%Y-%m-%d") - dt.datetime.strptime(config.get("PICK", "START_DAY"), "%Y-%m-%d")).days
+    context.BAR_COUNT = int(context.BAR_COUNT/7*5)
     context.FREQUENCY = '1d'
 
     context.POSITION_DAY = config.getint('POLICY', 'POSITION_DAY')
@@ -76,11 +77,6 @@ def after_trading(context):
             classify(context, order_book_id, order_day, historys[:context.POSITION_DAY])
 
     if context.run_info.end_date == day:
-        context.classifying = context.classifying[context.classifying['classify'] != ""]
-        if context.classifying.size:
-            if pathlib.Path('classifying.csv').exists():
-                context.classifying.to_csv('classifying.csv', mode='a', index=False, header=False)
-            else:
-                context.classifying.to_csv('classifying.csv', index=False)
+        context.classifying.to_csv('classifying.csv', index=False)
         print(dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "END")
 
