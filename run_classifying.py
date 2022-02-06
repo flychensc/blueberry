@@ -2,8 +2,6 @@
 
 from rqalpha import run_file
 
-import datetime as dt
-
 import configparser
 
 

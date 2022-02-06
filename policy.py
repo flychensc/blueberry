@@ -5,7 +5,6 @@ import numpy as np
 import pandas as pd
 
 import configparser
-import pathlib
 
 
 def classify(context, order_book_id, order_day, historys):
