@@ -26,7 +26,7 @@ def classify(context, order_book_id, order_day, historys):
             profit = price/cost - 1
             break
     if label == "holding":
-        profit = 1 - historys['close'][-1]/cost
+        profit = historys['close'][-1]/cost - 1
 
     context.classifying.loc[(context.classifying['order_day'] == order_day) & (context.classifying['order_book_id'] == order_book_id), 'holding_days'] = int(holding_days)
     context.classifying.loc[(context.classifying['order_day'] == order_day) & (context.classifying['order_book_id'] == order_book_id), 'profit'] = round(profit, 2)
