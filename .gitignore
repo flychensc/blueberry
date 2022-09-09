@@ -133,6 +133,3 @@ config.ini
 
 # 数据文件
 *.csv
-
-# 执行脚本
-run.bat
