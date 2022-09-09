@@ -40,7 +40,7 @@ def after_trading(context):
     datas = context.group[-COUNT:]
     datas.columns = ['count']
 
-    # 按historys的日期，合并datas。因为有时候某天count是0
+    # 按historys的日期, 合并datas. 因为有时候某天count是0
     datas = pd.concat([datas, historys], axis=1).fillna(0).sort_index()[-COUNT:]
 
     # refer https://www.cnblogs.com/Atanisi/p/8530693.html

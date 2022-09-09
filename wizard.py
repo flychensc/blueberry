@@ -44,6 +44,7 @@ def after_trading(context):
         ma2 = talib.SMA(prices, context.MA2)[-1]
         ma3 = talib.SMA(prices, context.MA3)[-1]
         rsi = talib.RSI(prices, timeperiod=context.RSI1)[-1]
+        # 符合指标与否
         if price > ma1 > ma2 > ma3 and rsi > context.RSI1_THR:
             context.picking = context.picking.append({
                     "order_day": day,

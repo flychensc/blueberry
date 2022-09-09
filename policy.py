@@ -17,10 +17,12 @@ def classify(context, order_book_id, order_day, historys):
     label = "holding"
     for price in historys['close'][1:]:
         holding_days += 1
+        # 止损
         if price < stop_loss:
             label = "loss"
             profit = price/cost - 1
             break
+        # 止盈
         if price > take_profit:
             label = "profit"
             profit = price/cost - 1
@@ -66,6 +68,7 @@ def after_trading(context):
                                      (context.classifying['order_day'] < day) &
                                      (context.classifying['classify'] == "")]
 
+        # 一天天往后递推: 2022/9/8, 2022/9/9...
         for order_day in order_data['order_day'].sort_values():
             order_day64 = np.int64(order_day.strftime("%Y%m%d%H%M%S"))
             # 逐次缩小historys
