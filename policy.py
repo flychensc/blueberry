@@ -68,7 +68,7 @@ def after_trading(context):
                                      (context.classifying['order_day'] < day) &
                                      (context.classifying['classify'] == "")]
 
-        # 一天天往后递推: 2022/9/8, 2022/9/9...
+        # 该票所有的入选时间点
         for order_day in order_data['order_day'].sort_values():
             order_day64 = np.int64(order_day.strftime("%Y%m%d%H%M%S"))
             # 逐次缩小historys
