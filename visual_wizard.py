@@ -1,4 +1,6 @@
 # run_func_demo
+from dataclasses import replace
+from tkinter.filedialog import dialogstates
 from rqalpha.api import *
 from rqalpha import run_func
 
@@ -29,8 +31,17 @@ def after_trading(context):
 
     COUNT = historys.shape[0]
 
+    # numpy to dataframe
+    historys = pd.DataFrame(historys)
+    historys['order_day'] = historys['datetime'].map(lambda x: dt.datetime.strptime(str(x), "%Y%m%d%H%M%S").date())
+    historys.drop('datetime', axis=1, inplace=True)
+    historys.set_index("order_day", inplace=True)
+
     datas = context.group[-COUNT:]
     datas.columns = ['count']
+
+    # 按historys的日期，合并datas。因为有时候某天count是0
+    datas = pd.concat([datas, historys], axis=1).fillna(0).sort_index()[-COUNT:]
 
     # refer https://www.cnblogs.com/Atanisi/p/8530693.html
 
@@ -52,8 +63,8 @@ def after_trading(context):
 
 config = {
   "base": {
-    "start_date": "2020-12-31",
-    "end_date": "2020-12-31",
+    "start_date": "2022-08-31",
+    "end_date": "2022-08-31",
   },
   "extra": {
     "log_level": "warning",
