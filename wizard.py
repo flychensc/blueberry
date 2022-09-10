@@ -11,7 +11,7 @@ import talib
 def init(context):
     print(dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "START")
     config = configparser.ConfigParser()
-    config.read('config.ini')
+    config.read('../cranberry/preparing/config.ini')
 
     context.MA1 = config.getint('MA', 'MA1')
     context.MA2 = config.getint('MA', 'MA2')
